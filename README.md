@@ -18,5 +18,5 @@
 **Team:**
 1. Jose Filho - 301005491 - jaraujo8@my.centennialcollege.ca
 2. Matin
-3. Rodrigo
+3. Rodrigo Silva - 300993648 - rvieirad@my.centennialcollege.ca 
 4. Thayllan
