@@ -8,10 +8,21 @@
  */
 const app = require('./config/express-handler')();
 const port = process.env.PORT || 3000; // Configuration to work in Heroku
+const host = process.env.HOST || "http://127.0.0.1:"; // Configuration to work in Heroku
+const patientsService = host + port + "/patients";
 app.listen(port, function () {
-    console.log("Server is listening at http://127.0.0.1:" + port + "/");
+    console.log("Server is listening at " + host + port + " / ");
     console.log("Endpoins:");
-    console.log("http://127.0.0.1:" + port + "/patients method: GET");
-    console.log("http://127.0.0.1:" + port + "/patients method: POST");
-    console.log("http://127.0.0.1:" + port + "/patients method: DELETE");
+    console.log(patientsService + " method: GET");
+    console.log(patientsService + " method: POST");
+    console.log(patientsService + " method: DELETE");
+});
+
+
+app.get("/", function (req, res) {
+    res.status(200).send("<h3>Patients:</h3>" +
+        "<a href='" + patientsService + "'> " + patientsService + "</a> method: GET <br/> " +
+        "<a href='" + patientsService + "'> " + patientsService + "</a> method: POST <br/> " +
+        "<a href='" + patientsService + "'> " + patientsService + "</a> method: DELETE <br/> " +
+        "<h3>Patients View Records:</h3>");
 });

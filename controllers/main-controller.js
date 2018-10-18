@@ -19,21 +19,27 @@ module.exports = function (app) {
 
         //Get all the objects saved before.
         patientsSave.find({}, function (error, patients) {
+            console.log(patients == "");
             console.log("Send response <<<");
-            res.status(200).send(patients);
+            if (patients != null && patients != "") {
+                res.status(200).send(patients);
+            } else {
+                res.status(200).send("No records found");
+            }
+
         });
     });
 
     //Create a new patient
     app.post("/patients", function (req, res) {
-        console.log("Send request >>> "+ req);
+        console.log("Send request >>> " + req);
         // Increment post counter and show the counter
         postCounter++;
         showRequestCount();
 
         // Get the object in the request body, save and send the response
         var newProduct = req.body;
-        patientsSave.create( newProduct, function (error, patient) {
+        patientsSave.create(newProduct, function (error, patient) {
             console.log("Send response <<< " + patient);
             res.status(201).send(patient);
         });
@@ -47,7 +53,7 @@ module.exports = function (app) {
         showRequestCount();
 
         // delete all the records and send the response.
-        patientsSave.deleteMany({},function (error) {
+        patientsSave.deleteMany({}, function (error) {
             console.log("Send response <<< All patients were deleted");
             res.status(200).send("All patients were deleted.");
         });
