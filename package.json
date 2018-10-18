@@ -1,0 +1,33 @@
+{
+  "name": "etmp-assignment1",
+  "version": "1.0.0",
+  "description": "Develop Node.js http server to store and retrieve patient information using HTTP GET and POST requests and JSON data format.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mob-appl-develop-cent/ETMP-GroupProject.git"
+  },
+  "keywords": [
+    "node",
+    "http",
+    "get",
+    "post",
+    "json"
+  ],
+  "author": "José Filho, Matin, Rodrigo Silva, Thayllan Anacleto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mob-appl-develop-cent/ETMP-GroupProject/issues"
+  },
+  "homepage": "https://github.com/mob-appl-develop-cent/ETMP-GroupProject#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "consign": "^0.1.6",
+    "express": "^4.16.3",
+    "save": "^2.3.2"
+  }
+}
