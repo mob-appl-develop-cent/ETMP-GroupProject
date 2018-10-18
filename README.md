@@ -14,6 +14,7 @@
     - Heart Beat Rate
     
     
+**Postman HTTP methods: https://www.getpostman.com/collections/d36072455b5b5ea38b4c** 
     
 **Team:**
 1. Jose Filho - 301005491 - jaraujo8@my.centennialcollege.ca
