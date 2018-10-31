@@ -8,7 +8,7 @@ var MongoClient = require('mongodb').MongoClient,
 const DB = "Patients";
 const C_PATIENTS = "patients";
 
-var uri = "mongodb+srv://admin:administrator@groupproject-1cejk.gcp.mongodb.net/test?retryWrites=true";
+var uri = "mongodb+srv://admin:password@groupproject-1cejk.gcp.mongodb.net/test?retryWrites=true";
 MongoClient.connect(uri, function(err, client) {
 
     // Insert
