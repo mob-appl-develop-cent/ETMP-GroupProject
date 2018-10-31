@@ -30,6 +30,26 @@ module.exports = function (app) {
         });
     });
 
+    // Get patient by Id
+    app.get("/patients/:id", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        patientsSave.findOne( {_id : req.params.id} , function (error, patient) {
+            console.log(patient == "");
+            console.log("Send response <<<");
+            if (patient != null && patient != "") {
+                res.status(200).send(patient);
+            } else {
+                res.status(200).send("No records found");
+            }
+
+        });
+    });
+
     //Create a new patient
     app.post("/patients", function (req, res) {
         console.log("Send request >>> " + req);
