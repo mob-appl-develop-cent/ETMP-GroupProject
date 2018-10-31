@@ -44,7 +44,7 @@ module.exports = function (app) {
             if (patient != null && patient != "") {
                 res.status(200).send(patient);
             } else {
-                res.status(200).send("No records found");
+                res.status(404).send("No records found");
             }
 
         });
@@ -76,6 +76,28 @@ module.exports = function (app) {
         patientsSave.deleteMany({}, function (error) {
             console.log("Send response <<< All patients were deleted");
             res.status(200).send("All patients were deleted.");
+        });
+    });
+
+    // Delete patient by id
+    app.delete('/patients/:id', function (req, res) {
+        console.log("Send request >>>");
+        // Increment delete counter and show the counter
+        deleteCounter++;
+        showRequestCount();
+
+        // delete all the records and send the response.
+        patientsSave.delete(req.params.id, function (error) {
+            var message = ""
+            var status = 200
+            if (error != null) {
+                message = `No patient found with ID: ${req.params.id}`
+                status = 404
+            } else  {
+                message = `Patient under ID: ${req.params.id} deleted successfully`
+            }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
         });
     });
 };
