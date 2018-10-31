@@ -82,6 +82,33 @@ module.exports = function (app) {
         });
     });
 
+    //Create a new patient
+    app.post("/mongo/patients", function (req, res) {
+        console.log("Send request >>> " + req);
+        // Increment post counter and show the counter
+        postCounter++;
+        showRequestCount();
+
+        var connection = app.persistence.connectionFactory();
+        console.log(connection);
+        //connection.insert()
+        // Get the object in the request body, save and send the response
+        var newPatient = req.body;
+        patientsSave.create(newPatient, function (error, patient) {
+            var message = "";
+            var status = 201;
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else {
+                message = "An error ocurred";
+                status = 500
+            }
+
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+        });
+    });
+
     //Update patient by ID
     app.put("/patients/:id", function (req, res) {
         console.log("Send request >>> " + req);
