@@ -11,6 +11,7 @@ var postCounter = 0;
 var deleteCounter = 0;
 var putCounter = 0;
 module.exports = function (app) {
+
     // Get all the patients
     app.get("/patients", function (req, res) {
         console.log("Send request >>>");
@@ -20,13 +21,16 @@ module.exports = function (app) {
 
         //Get all the objects saved before.
         patientsSave.find({}, function (error, patients) {
-            console.log(patients == "");
-            console.log("Send response <<<");
-            if (patients != null && patients != "") {
-                res.status(200).send(patients);
-            } else {
-                res.status(200).send("No records found");
+            var message = ""
+            var status = 200
+            if (patients != undefined && patients != null && patients != "") {
+                message = patients
+            } else  {
+                message = `No records found`
+                status = 404
             }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
 
         });
     });
@@ -38,15 +42,18 @@ module.exports = function (app) {
         getCounter++;
         showRequestCount();
 
-        //Get all the objects saved before.
+        //Get first object using query based on the ID
         patientsSave.findOne( {_id : req.params.id} , function (error, patient) {
-            console.log(patient == "");
-            console.log("Send response <<<");
-            if (patient != null && patient != "") {
-                res.status(200).send(patient);
-            } else {
-                res.status(404).send("No records found");
+            var message = ""
+            var status = 200
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else  {
+                status = 404
+                message = `No records found`
             }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
 
         });
     });
@@ -61,8 +68,17 @@ module.exports = function (app) {
         // Get the object in the request body, save and send the response
         var newPatient = req.body;
         patientsSave.create(newPatient, function (error, patient) {
-            console.log("Send response <<< " + patient);
-            res.status(201).send(patient);
+            var message = ""
+            var status = 201
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else {
+                message = `An error ocurred`
+                status = 500
+            }
+            
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
         });
     });
 
@@ -73,12 +89,22 @@ module.exports = function (app) {
         putCounter++;
         showRequestCount();
 
-        // Get the object in the request body, save and send the response
+        // Get the object in the request body and update the saved object based on ID
         var newPatient = req.body;
         newPatient._id = req.params.id
         patientsSave.update(newPatient, function (error, patient) {
-            console.log("Send response <<< " + patient);
-            res.status(200).send(patient);
+            var message = ""
+            var status = 200
+
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else {
+                message = `User not found`
+                status = 404
+            }
+            
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
         });
     });
 
@@ -91,8 +117,16 @@ module.exports = function (app) {
 
         // delete all the records and send the response.
         patientsSave.deleteMany({}, function (error) {
-            console.log("Send response <<< All patients were deleted");
-            res.status(200).send("All patients were deleted.");
+            var message = ""
+            var status = 200
+            if (error == undefined || error == null) {
+                message = `All patients were deleted successfully`
+            } else  {
+                message = `Unexpected error`
+                status = 500
+            }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
         });
     });
 
@@ -103,18 +137,21 @@ module.exports = function (app) {
         deleteCounter++;
         showRequestCount();
 
-        // delete all the records and send the response.
-        patientsSave.delete(req.params.id, function (error) {
-            var message = ""
-            var status = 200
-            if (error != null) {
-                message = `No patient found with ID: ${req.params.id}`
-                status = 404
+        // patientsSave.delete doesnt not return any error even if there is no patients with 
+        // the specified ID, so we had to use the findOne() to check if the patient exists
+        // before deleting it
+        patientsSave.findOne( {_id : req.params.id} , function (error, patient) {
+            if (patient != undefined && patient != null && patient != "") { 
+                patientsSave.delete(req.params.id, function (error) {
+                    res.status(200).send(`Patient ID: ${req.params.id} deleted successfully`);
+                    console.log(`Send response <<< Patient ID: ${req.params.id} deleted successfully`);
+                });
             } else  {
-                message = `Patient under ID: ${req.params.id} deleted successfully`
+                res.status(404).send(`No patient found with ID: ${req.params.id}`);
+                console.log(`Send response <<< No patient found with ID: ${req.params.id}`);
             }
-            res.status(status).send(message);
-            console.log(`Send response <<< ${message}`);
+            
+
         });
     });
 };
