@@ -9,6 +9,7 @@ const patientsSave = require('save')('patients');
 var getCounter = 0;
 var postCounter = 0;
 var deleteCounter = 0;
+var putCounter = 0;
 module.exports = function (app) {
     // Get all the patients
     app.get("/patients", function (req, res) {
@@ -58,10 +59,26 @@ module.exports = function (app) {
         showRequestCount();
 
         // Get the object in the request body, save and send the response
-        var newProduct = req.body;
-        patientsSave.create(newProduct, function (error, patient) {
+        var newPatient = req.body;
+        patientsSave.create(newPatient, function (error, patient) {
             console.log("Send response <<< " + patient);
             res.status(201).send(patient);
+        });
+    });
+
+    //Update patient by ID
+    app.put("/patients/:id", function (req, res) {
+        console.log("Send request >>> " + req);
+        // Increment post counter and show the counter
+        putCounter++;
+        showRequestCount();
+
+        // Get the object in the request body, save and send the response
+        var newPatient = req.body;
+        newPatient._id = req.params.id
+        patientsSave.update(newPatient, function (error, patient) {
+            console.log("Send response <<< " + patient);
+            res.status(200).send(patient);
         });
     });
 
@@ -104,7 +121,8 @@ module.exports = function (app) {
 
 // just print in the log the counters of the requests
 function showRequestCount() {
-    console.log("Processed Request Count--> sendGet:" + getCounter
-        + ", sendPost:" + postCounter
-        + ", sendDelete:" + deleteCounter);
+    console.log("Processed Request Count--> GET:" + getCounter
+        + ", POST:" + postCounter
+        + ", DELETE:" + deleteCounter
+        + ", PUT:" + putCounter);
 }
