@@ -109,7 +109,7 @@ module.exports = function (app) {
     });
 
     // Delete all the patients
-    app.delete(`/patients`, function (req, res) {
+    app.delete("/patients", function (req, res) {
         console.log("Send request >>>");
         // Increment delete counter and show the counter
         deleteCounter++;
@@ -131,7 +131,7 @@ module.exports = function (app) {
     });
 
     // Delete patient by id
-    app.delete(`/patients/:id`, function (req, res) {
+    app.delete("/patients/:id", function (req, res) {
         console.log("Send request >>>");
         // Increment delete counter and show the counter
         deleteCounter++;
@@ -142,7 +142,6 @@ module.exports = function (app) {
         // before deleting it
         patientsSave.findOne({_id: req.params.id}, function (error, patient) {
             if (patient != undefined && patient != null && patient != "") {
-                ``
                 patientsSave.delete(req.params.id, function (error) {
                     res.status(200).send(`Patient ID: ${req.params.id} deleted successfully`);
                     console.log(`Send response <<< Patient ID: ${req.params.id} deleted successfully`);
