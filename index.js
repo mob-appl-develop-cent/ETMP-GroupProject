@@ -14,12 +14,9 @@ const recordsService = host + (port === 3000 ? ':' + port : '') + "/patients/:id
 app.listen(port, function () {
     console.log("Server is listening at " + patientsService + "/");
     console.log("Endpoins:");
-    console.log(patientsService + " method: GET");
-    console.log(patientsService + " method: POST");
-    console.log(patientsService + " method: DELETE");
-    console.log(recordsService + " method: GET");
-    console.log(recordsService + " method: POST");
-    console.log(recordsService + " method: DELETE");
+    console.log(patientsService + " methods: GET, POST, DELETE");
+    console.log(patientsService + "/:id methods GET, PUT, DELETE");
+    console.log(recordsService + " method: GET, POST");
 });
 
 
