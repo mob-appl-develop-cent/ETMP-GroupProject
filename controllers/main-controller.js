@@ -67,19 +67,51 @@ module.exports = function (app) {
 
         // Get the object in the request body, save and send the response
         var newPatient = req.body;
-        patientsSave.create(newPatient, function (error, patient) {
-            var message = "";
-            var status = 201;
-            if (patient != undefined && patient != null && patient != "") {
-                message = patient
-            } else {
-                message = `An error ocurred`;
-                status = 500;
-            }
+        var isValid = true;
+        var validationMessage = "";
 
-            res.status(status).send(message);
-            console.log(`Send response <<< ${message}`);
-        });
+        if (newPatient.name == null) {
+            isValid = false;
+            validationMessage += "Field 'name' is required!\n";
+        }
+
+        if (newPatient.age == null) {
+            isValid = false;
+            validationMessage += "Field 'age' is required!\n";
+        }
+
+        if (newPatient.address == null) {
+            isValid = false;
+            validationMessage += "Field 'address' is required!\n";
+        }
+
+        if (newPatient.room_number == null) {
+            isValid = false;
+            validationMessage += "Field 'room_number' is required!\n";
+        }
+
+        if (newPatient.emergency_number == null) {
+            isValid = false;
+            validationMessage += "Field 'emergency_number' is required!\n";
+        }
+
+        if (isValid) {
+            patientsSave.create(newPatient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        } else {
+            res.status(500).send(validationMessage);
+        }
     });
 
     //Update patient by ID
@@ -188,21 +220,53 @@ module.exports = function (app) {
         // Get the object in the request body, save and send the response
         var patient = req.body;
         patient._id = req.params.id;
-        patientsSave.update(patient, function (error, record) {
-            var message = "";
-            var status = 201;
-            console.log(error);
-            console.log(record);
-            if (record != undefined && record != null && record != "") {
-                message = record
-            } else {
-                message = `An error ocurred`;
-                status = 500
-            }
 
-            res.status(status).send(message);
-            console.log(`Send response <<< ${message}`);
-        });
+        var isValid = true;
+        var validationMessage = "";
+
+        if (patient.name == null) {
+            isValid = false;
+            validationMessage += "Field 'age' is required!\n";
+        }
+
+        if (patient.age == null) {
+            isValid = false;
+            validationMessage += "Field 'age' is required!\n";
+        }
+
+        if (patient.address == null) {
+            isValid = false;
+            validationMessage += "Field 'address' is required!\n";
+        }
+
+        if (patient.room_number == null) {
+            isValid = false;
+            validationMessage += "Field 'room_number' is required!\n";
+        }
+
+        if (patient.emergency_number == null) {
+            isValid = false;
+            validationMessage += "Field 'emergency_number' is required!\n";
+        }
+        if (isValid) {
+            patientsSave.update(patient, function (error, record) {
+                var message = "";
+                var status = 201;
+                console.log(error);
+                console.log(record);
+                if (record != undefined && record != null && record != "") {
+                    message = record;
+                } else {
+                    message = `An error ocurred`;
+                    status = 500
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        } else {
+            res.status(500).send(validationMessage);
+        }
     });
 
 };
