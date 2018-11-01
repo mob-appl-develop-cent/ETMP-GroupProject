@@ -10,12 +10,16 @@ const app = require('./config/express-handler')();
 const port = process.env.PORT || 3000; // Configuration to work in Heroku
 const host = process.env.HOST || "http://127.0.0.1"; // Configuration to work in Heroku
 const patientsService = host + (port === 3000 ? ':' + port : '') + "/patients";
+const recordsService = host + (port === 3000 ? ':' + port : '') + "/patients/:id/records/";
 app.listen(port, function () {
-    console.log("Server is listening at " + host + port + " / ");
+    console.log("Server is listening at " + patientsService + "/");
     console.log("Endpoins:");
     console.log(patientsService + " method: GET");
     console.log(patientsService + " method: POST");
     console.log(patientsService + " method: DELETE");
+    console.log(recordsService + " method: GET");
+    console.log(recordsService + " method: POST");
+    console.log(recordsService + " method: DELETE");
 });
 
 
