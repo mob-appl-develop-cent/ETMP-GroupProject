@@ -67,51 +67,26 @@ module.exports = function (app) {
 
         // Get the object in the request body, save and send the response
         var newPatient = req.body;
-        var isValid = true;
-        var validationMessage = "";
 
-        if (newPatient.name == null) {
-            isValid = false;
-            validationMessage += "Field 'name' is required!\n";
+        var reqValidErrors = isPatientRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
+            return;
         }
 
-        if (newPatient.age == null) {
-            isValid = false;
-            validationMessage += "Field 'age' is required!\n";
-        }
+        patientsSave.create(newPatient, function (error, patient) {
+            var message = "";
+            var status = 201;
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else {
+                message = `An error ocurred`;
+                status = 500;
+            }
 
-        if (newPatient.address == null) {
-            isValid = false;
-            validationMessage += "Field 'address' is required!\n";
-        }
-
-        if (newPatient.room_number == null) {
-            isValid = false;
-            validationMessage += "Field 'room_number' is required!\n";
-        }
-
-        if (newPatient.emergency_number == null) {
-            isValid = false;
-            validationMessage += "Field 'emergency_number' is required!\n";
-        }
-
-        if (isValid) {
-            patientsSave.create(newPatient, function (error, patient) {
-                var message = "";
-                var status = 201;
-                if (patient != undefined && patient != null && patient != "") {
-                    message = patient
-                } else {
-                    message = `An error ocurred`;
-                    status = 500;
-                }
-
-                res.status(status).send(message);
-                console.log(`Send response <<< ${message}`);
-            });
-        } else {
-            res.status(500).send(validationMessage);
-        }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+        });
     });
 
     //Update patient by ID
@@ -221,52 +196,28 @@ module.exports = function (app) {
         var patient = req.body;
         patient._id = req.params.id;
 
-        var isValid = true;
-        var validationMessage = "";
-
-        if (patient.name == null) {
-            isValid = false;
-            validationMessage += "Field 'age' is required!\n";
-        }
-
-        if (patient.age == null) {
-            isValid = false;
-            validationMessage += "Field 'age' is required!\n";
-        }
-
-        if (patient.address == null) {
-            isValid = false;
-            validationMessage += "Field 'address' is required!\n";
-        }
-
-        if (patient.room_number == null) {
-            isValid = false;
-            validationMessage += "Field 'room_number' is required!\n";
-        }
-
-        if (patient.emergency_number == null) {
-            isValid = false;
-            validationMessage += "Field 'emergency_number' is required!\n";
-        }
-        if (isValid) {
-            patientsSave.update(patient, function (error, record) {
-                var message = "";
-                var status = 201;
-                console.log(error);
-                console.log(record);
-                if (record != undefined && record != null && record != "") {
-                    message = record;
-                } else {
-                    message = `An error ocurred`;
-                    status = 500
-                }
-
-                res.status(status).send(message);
-                console.log(`Send response <<< ${message}`);
-            });
-        } else {
+        const validationMessage = isPatientValid(patient);
+        if (validationMessage) {
             res.status(500).send(validationMessage);
+            return;
         }
+
+        patientsSave.update(patient, function (error, record) {
+            var message = "";
+            var status = 201;
+            console.log(error);
+            console.log(record);
+            if (record != undefined && record != null && record != "") {
+                message = record;
+            } else {
+                message = `An error ocurred`;
+                status = 500
+            }
+
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+        });
+
     });
 
 };
@@ -277,4 +228,15 @@ function showRequestCount() {
         + ", POST:" + postCounter
         + ", DELETE:" + deleteCounter
         + ", PUT:" + putCounter);
+}
+
+function isPatientRequestValid(req) {
+    req.assert("name", "Field 'name' is required!").notEmpty();
+    req.assert("age", "Field 'age' is required!").notEmpty();
+    req.assert("age", "Field 'age' must be an integer").isInt();
+    req.assert("address", "Field 'address' is required!").notEmpty();
+    req.assert("room_number", "Field 'room_number' is required!").notEmpty();
+    req.assert("emergency_number", "Field 'emergency_number' is required!").notEmpty();
+
+    return req.validationErrors();
 }
