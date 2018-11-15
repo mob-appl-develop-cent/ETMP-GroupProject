@@ -12,6 +12,8 @@ var deleteCounter = 0;
 var putCounter = 0;
 module.exports = function (app) {
 
+    //PATIENTS
+
     // Get all the patients
     app.get("/patients", function (req, res) {
         console.log("Send request >>>");
@@ -162,6 +164,8 @@ module.exports = function (app) {
         });
     });
 
+    // RECORDS
+
     // Get all the records by patient id
     app.get("/patients/:id/records/", function (req, res) {
         console.log("Send request >>>");
@@ -185,11 +189,49 @@ module.exports = function (app) {
         });
     });
 
+    // Get specific record by patient and record id
+    app.get("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        patientsSave.findOne({_id: req.params.id}, function (error, patient) {
+            var message = "";
+            var status = 200;
+            if (patient != undefined && patient != null && patient != "") {
+                if (patient.records != undefined && patient.records != null) {
+                    var recordFound = false;
+                    patient.records.forEach(function (element, index) {
+                        if (element.id == req.params.rid) {
+                            message = patient.records[index];
+                            recordFound = true;
+                        }
+                    });
+                    if (!recordFound) {
+                        message = `No record with this id was found.`;
+                        status = 404;
+                    }
+                } else {
+                    message = `No records found`;
+                    status = 404
+                }
+            } else {
+                message = `No records found`;
+                status = 404
+            }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+
+        });
+    });
+
     //Create a new record by patient id
     app.post("/patients/:id/records/", function (req, res) {
         console.log("Send request >>>");
         // Increment get counter and show the counter
-        getCounter++;
+        postCounter++;
         showRequestCount();
 
         var reqValidErrors = isRecordsRequestValid(req);
@@ -212,10 +254,11 @@ module.exports = function (app) {
             var record = req.body;
             if (patient.records == null || patient.records == undefined) {
                 patient.records = [];
-                record.id = 1;
+                record.id = "1";
             } else {
                 console.log(patient.records.length);
-                record.id = patient.records[patient.records.length-1].id + 1;
+                var index = parseInt(patient.records[patient.records.length - 1].id) + 1;
+                record.id = index + "";
             }
 
             patient.records.push(record);
@@ -235,6 +278,177 @@ module.exports = function (app) {
             });
         });
 
+    });
+
+    //Update a record by patient and record id
+    app.put("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        putCounter++;
+        showRequestCount();
+
+        var reqValidErrors = isRecordsRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
+            return;
+        }
+        //Get all the objects saved before.
+        patientsSave.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            var record = req.body;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                var recordFound = false;
+                patient.records.forEach(function (element, index) {
+                    console.log(element);
+                    if (element.id == req.params.rid) {
+                        record.id = req.params.rid;
+                        patient.records[req.params.rid - 1] = record;
+                        recordFound = true;
+                    }
+                });
+                if (!recordFound) {
+                    message = `No record with this id was found.`;
+                    status = 404;
+                    res.status(status).send(message);
+                    return;
+                }
+
+            }
+
+            patientsSave.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
+    });
+
+    //Delete a record by patient and record id
+    app.delete("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        deleteCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        patientsSave.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                var recordFound = false;
+                patient.records.forEach(function (element, index) {
+                    if (element.id == req.params.rid) {
+                        patient.records.splice(index, 1);
+                        recordFound = true;
+                    }
+                });
+                if (!recordFound) {
+                    message = `No record with this id was found.`;
+                    status = 404;
+                    res.status(status).send(message);
+                    return;
+                }
+            }
+
+            patientsSave.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
+    });
+
+    //Delete all patient's records by patient id
+    app.delete("/patients/:id/records", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        deleteCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        patientsSave.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                patient.records = null;
+            }
+
+            patientsSave.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
     });
 
 };
