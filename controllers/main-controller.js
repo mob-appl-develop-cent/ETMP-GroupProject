@@ -243,11 +243,12 @@ module.exports = function (app) {
         patientsSave.findOne({_id: req.params.id}, function (error, obj) {
             var message = "";
             var status = 200;
-            if (obj != undefined && obj != null && obj != "") {
-                message = obj;
-            } else {
+            if (obj == undefined || obj == null && obj || "") {
                 message = `No records found`;
-                status = 404
+                status = 404;
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+                return;
             }
 
             var patient = obj;
@@ -273,7 +274,7 @@ module.exports = function (app) {
                     status = 500;
                 }
 
-                res.status(status).send(message);
+                    res.status(status).send(message);
                 console.log(`Send response <<< ${message}`);
             });
         });
