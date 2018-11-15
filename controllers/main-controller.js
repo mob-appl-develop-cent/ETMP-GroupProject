@@ -187,35 +187,52 @@ module.exports = function (app) {
 
     //Create a new record by patient id
     app.post("/patients/:id/records/", function (req, res) {
-        console.log("Send request >>> " + req);
-        // Increment post counter and show the counter
-        postCounter++;
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
         showRequestCount();
 
-        // Get the object in the request body, save and send the response
-        var patient = req.body;
-        patient._id = req.params.id;
-
-        const validationMessage = isPatientValid(patient);
-        if (validationMessage) {
-            res.status(500).send(validationMessage);
+        var reqValidErrors = isRecordsRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
             return;
         }
-
-        patientsSave.update(patient, function (error, record) {
+        //Get all the objects saved before.
+        patientsSave.findOne({_id: req.params.id}, function (error, obj) {
             var message = "";
-            var status = 201;
-            console.log(error);
-            console.log(record);
-            if (record != undefined && record != null && record != "") {
-                message = record;
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
             } else {
-                message = `An error ocurred`;
-                status = 500
+                message = `No records found`;
+                status = 404
             }
 
-            res.status(status).send(message);
-            console.log(`Send response <<< ${message}`);
+            var patient = obj;
+            var record = req.body;
+            if (patient.records == null || patient.records == undefined) {
+                patient.records = [];
+                record.id = 1;
+            } else {
+                console.log(patient.records.length);
+                record.id = patient.records[patient.records.length-1].id + 1;
+            }
+
+            patient.records.push(record);
+
+            patientsSave.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
         });
 
     });
@@ -231,12 +248,24 @@ function showRequestCount() {
 }
 
 function isPatientRequestValid(req) {
-    req.assert("name", "Field 'name' is required!").notEmpty();
+    req.assert("first_name", "Field 'first name' is required!").notEmpty();
+    req.assert("last_name", "Field 'last_name' is required!").notEmpty();
     req.assert("age", "Field 'age' is required!").notEmpty();
     req.assert("age", "Field 'age' must be an integer").isInt();
     req.assert("address", "Field 'address' is required!").notEmpty();
     req.assert("room_number", "Field 'room_number' is required!").notEmpty();
     req.assert("emergency_number", "Field 'emergency_number' is required!").notEmpty();
+    req.assert("department", "Field 'department' is required!").notEmpty();
+    req.assert("doctor", "Field 'doctor' is required!").notEmpty();
+
+    return req.validationErrors();
+}
+
+function isRecordsRequestValid(req) {
+    req.assert("date", "Field 'first name' is required!").notEmpty();
+    req.assert("nurse_name", "Field 'last_name' is required!").notEmpty();
+    req.assert("type", "Field 'age' is required!").notEmpty();
+    req.assert("category", "Field 'address' is required!").notEmpty();
 
     return req.validationErrors();
 }

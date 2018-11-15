@@ -1,8 +1,8 @@
 //Just an example how to connect in mongodb cloud
 
-var MongoClient = require('mongodb').MongoClient,
-    ObjectID = require('mongodb').ObjectID;
-const uri = "mongodb+srv://admin:administrator@groupproject-1cejk.gcp.mongodb.net/test?retryWrites=true";
+//var MongoClient = require('mongodb').MongoClient,
+//    ObjectID = require('mongodb').ObjectID;
+//const uri = "mongodb+srv://admin:administrator@groupproject-1cejk.gcp.mongodb.net/test?retryWrites=true";
 
 /*const DB = "Patients";
 const C_PATIENTS = "patients";
@@ -30,10 +30,10 @@ MongoClient.connect(uri, function (err, client) {
     client.close();
 });*/
 
-function createDBConnection() {
-    return MongoClient.connect(uri, {useNewUrlParser: true});
-}
+//function createDBConnection() {
+//    return MongoClient.connect(uri, {useNewUrlParser: true});
+//}
 
-module.exports = function () {
-    return createDBConnection();
-};
+//module.exports = function () {
+//    return createDBConnection();
+//};
