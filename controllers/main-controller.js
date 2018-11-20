@@ -477,10 +477,10 @@ function isPatientRequestValid(req) {
 }
 
 function isRecordsRequestValid(req) {
-    req.assert("date", "Field 'first name' is required!").notEmpty();
-    req.assert("nurse_name", "Field 'last_name' is required!").notEmpty();
-    req.assert("type", "Field 'age' is required!").notEmpty();
-    req.assert("category", "Field 'address' is required!").notEmpty();
+    req.assert("date", "Field 'date' is required!").notEmpty();
+    req.assert("nurse_name", "Field 'nurse_name' is required!").notEmpty();
+    req.assert("type", "Field 'type' is required!").notEmpty();
+    req.assert("category", "Field 'category' is required!").notEmpty();
 
     return req.validationErrors();
 }
