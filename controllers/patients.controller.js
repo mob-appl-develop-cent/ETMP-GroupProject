@@ -1,44 +1,82 @@
+/*
+ * patients.controller.js manage all the patients requests and response http methods.
+ *
+ * Developed by Jose Aleixo Araujo Porpino Filho
+ * Date: 2018-11-21
+ * Version 1.0.0
+ */
+var getCounter = 0;
+var postCounter = 0;
+var deleteCounter = 0;
+var putCounter = 0;
+
+const Patient = require('../models/patient.model');
+
 module.exports = function (app) {
-    /*app.get('/pagamentos', function(req, res){
-        console.log('Recebida requisicao de teste na porta 3000.')
-        res.send('OK.');
-    });*/
-    const Patient = require('../models/patient.model');
-
-    app.post('/mongo', function (req, res) {
+    app.post('/mongo/patients', function (req, res) {
+        console.log("Send request >>> " + req);
+        // Increment post counter and show the counter
+        postCounter++;
+        showRequestCount();
 
 
-        var patient = new Patient({
-            first_name: req.body.first_name,
-            last_name: req.body.last_name
-        });
-        console.log('processando uma requisicao de um novo pagamento');
+        let reqValidErrors = isPatientRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
+            return;
+        }
+        let patient = fillPatientObjectFromReqBody(req);
 
-        //console.log(app.persistence);
-        //console.log(app.persistence.connectionFactory());
-        //var connection = app.persistence.connectionFactory();
-        //var pagamentoDao = new app.persistence.PatientDao(connection);
-        //patient.save()
-        patient.save(function (err) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            res.send('Product Created successfully')
-        });
-
-        /*pagamentoDao.salvar(pagamento, function (erro, resultado) {
-            if (erro) {
-                console.log('Erro ao inserir no banco:' + erro);
-                res.status(500).send(erro);
+        patient.save(function (err, obj) {
+            let message = "";
+            let status = 201;
+            console.log(err, obj);
+            //TODO: Get the err variable and try t catch the error correctly, 'cause ot shows all the error validation, so, our validation is not necessary.
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj
             } else {
-                console.log('pagamento criado');
-                res.location('/pagamentos/pagamento/' +
-                    resultado.insertId);
-
-                res.status(201).json(pagamento);
+                message = `An error ocurred`;
+                status = 500;
             }
-        });*/
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+        });
 
     });
+
+
 };
+
+function showRequestCount() {
+    console.log("Processed Request Count--> GET:" + getCounter
+        + ", POST:" + postCounter
+        + ", DELETE:" + deleteCounter
+        + ", PUT:" + putCounter);
+}
+
+function isPatientRequestValid(req) {
+    req.assert("first_name", "Field 'first name' is required!").notEmpty();
+    req.assert("last_name", "Field 'last_name' is required!").notEmpty();
+    req.assert("age", "Field 'age' is required!").notEmpty();
+    req.assert("age", "Field 'age' must be an integer").isInt();
+    req.assert("address", "Field 'address' is required!").notEmpty();
+    req.assert("room_number", "Field 'room_number' is required!").notEmpty();
+    req.assert("emergency_number", "Field 'emergency_number' is required!").notEmpty();
+    req.assert("department", "Field 'department' is required!").notEmpty();
+    req.assert("doctor", "Field 'doctor' is required!").notEmpty();
+
+    return req.validationErrors();
+}
+
+function fillPatientObjectFromReqBody(req) {
+    return new Patient({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        age: req.body.age,
+        address: req.body.address,
+        room_number: req.body.room_number,
+        emergency_number: req.body.emergency_number,
+        department: req.body.department,
+        doctor: req.body.doctor
+    });
+}
