@@ -1,12 +1,33 @@
-const TABLE = "patients";
+const Patient = require('../models/patient.model');
+
 function PatientDao(connection) {
     this._connection = connection;
 }
+PatientDao.prototype.salvar = function (patient, callback) {
+    console.log('aquiiiiii');
+    let _patient = new Patient(
+        {
+            first_name: patient.first_name,
+            last_name: patient.last_name
+        }
+    );
+    _patient.save(function (err) {
 
-PatientDao.prototype.save = function (patient, callback) {
-    this._connection.db(TABLE).insert(patient, callback);
+    });
+
+    product.save(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.send('Product Created successfully')
+    })
 };
 
-module.exports = function () {
+PatientDao.prototype.salva = function(pagamento,callback) {
+    this._connection.query('INSERT INTO pagamentos SET ?', pagamento, callback);
+};
+
+
+module.exports = function(){
     return PatientDao;
 };

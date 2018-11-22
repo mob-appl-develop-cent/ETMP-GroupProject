@@ -21,7 +21,7 @@ module.exports = function () {
     //Consign will look, include and route the folders of the project
     consign()
         .include('controllers')
-        .then('persistence')
+        //.then('controllers')
         .into(app);
 
     return app;

@@ -11,6 +11,19 @@ const port = process.env.PORT || 3000; // Configuration to work in Heroku
 const host = process.env.HOST || "http://127.0.0.1"; // Configuration to work in Heroku
 const patientsService = host + (port === 3000 ? ':' + port : '') + "/patients";
 const recordsService = host + (port === 3000 ? ':' + port : '') + "/patients/:id/records/";
+
+//Just an example how to connect in mongodb cloud
+// Set up mongoose connection
+const mongoose = require('mongoose');
+let dev_db_url = 'mongodb://admin:group3noobJS@ds037997.mlab.com:37997/etmp-group-project-noobjs';
+let mongoDB = process.env.MONGODB_URI || dev_db_url;
+
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+
 app.listen(port, function () {
     console.log("Server is listening at " + patientsService + "/");
     console.log("Endpoins:");

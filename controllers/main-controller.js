@@ -10,6 +10,7 @@ var getCounter = 0;
 var postCounter = 0;
 var deleteCounter = 0;
 var putCounter = 0;
+
 module.exports = function (app) {
 
     //PATIENTS
@@ -274,7 +275,7 @@ module.exports = function (app) {
                     status = 500;
                 }
 
-                    res.status(status).send(message);
+                res.status(status).send(message);
                 console.log(`Send response <<< ${message}`);
             });
         });
@@ -452,6 +453,33 @@ module.exports = function (app) {
         });
     });
 
+
+    app.post("/mongo2", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        postCounter++;
+        showRequestCount();
+        var connection = app.persistence.connectionFactory();
+        var patientDAO = new app.persistence.PatientDAO(connection);
+
+        patientDAO.salvar(req.body, function (erro, result) {
+            console.log(erro, result);
+        });
+/*
+        patientsSave.save(patient, function (error, patient) {
+            var message = "";
+            var status = 201;
+            if (patient != undefined && patient != null && patient != "") {
+                message = patient
+            } else {
+                message = `An error ocurred`;
+                status = 500;
+            }
+
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+        });*/
+    });
 };
 
 // just print in the log the counters of the requests
