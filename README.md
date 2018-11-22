@@ -18,6 +18,6 @@
     
 **Team:**
 1. Jose Filho - 301005491 - jaraujo8@my.centennialcollege.ca
-2. Matin
+2. Liam Salehi - mattinn - hsalehi2@my.centennialcollege.ca
 3. Rodrigo Silva - 300993648 - rvieirad@my.centennialcollege.ca 
 4. Thayllan Anacleto - 300973606 - tanaclet@my.centennialcollege.ca
