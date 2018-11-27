@@ -49,7 +49,7 @@ var restify = require('restify');
 //make restify server
 server = restify.createServer({ name: SERVER_NAME });
 
-server.listen(PORT, function () {
+server.listen(port, function () {
     console.log("Server stared at %s", server.url);
 });
 //server configs
