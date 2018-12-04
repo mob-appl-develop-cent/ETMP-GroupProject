@@ -175,15 +175,23 @@ module.exports = function (app) {
         showRequestCount();
 
         //Get all the objects saved before.
-        patientsSave.findOne({_id: req.params.id}, function (error, records) {
+        patientsSave.findOne({_id: req.params.id}, function (error, patient) {
             var message = "";
             var status = 200;
-            if (records != undefined && records != null && records != "") {
-                message = records
+            
+            if (patient != undefined && patient != null && patient != "") {
+                if (patient.records != undefined && patient.records != null) {
+                    message = patient.records;
+                    var recordFound = true;
+                } else {
+                    message = `No records found`;
+                    status = 404
+                }
             } else {
                 message = `No records found`;
                 status = 404
             }
+
             res.status(status).send(message);
             console.log(`Send response <<< ${message}`);
 

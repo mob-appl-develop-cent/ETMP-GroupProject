@@ -22,6 +22,9 @@ mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', function() {
+    console.log("DB Connection established");
+});
 
 
 app.listen(port, function () {
@@ -40,3 +43,44 @@ app.get("/", function (req, res) {
         patientsService + " method: DELETE <br/>" +
         "<h3>Patients View Records:</h3>");
 });
+
+var SERVER_NAME = 'patients-api';
+var restify = require('restify');
+//make restify server
+server = restify.createServer({ name: SERVER_NAME });
+
+server.listen(port, function () {
+    console.log("Server stared at %s", server.url);
+});
+//server configs
+server.use(restify.fullResponse());
+server.use(restify.bodyParser());
+
+var Patients = require('../models/patient.model');
+
+//******************* GET **********************
+
+// GET Patients list
+//results format: first_name last_name
+server.get('/patients', function (req, res, next) {
+    Patients.
+    find({}).
+    select('first_name last_name').
+    exec (function (err, patients) {
+        res.send(patients);
+    });
+    next();
+});
+
+//GET patient by id
+server.get('/patients/:id', function (req,res, next) {
+    Patients.
+    findOne({ _id: req.params.id }).
+    select('first_name last_name').
+    exec (function (err, patient) {
+        res.send(patient);
+    });
+    next();
+});
+
+
