@@ -178,17 +178,16 @@ module.exports = function (app) {
         patientsSave.findOne({_id: req.params.id}, function (error, patient) {
             var message = "";
             var status = 200;
-            
+
             if (patient != undefined && patient != null && patient != "") {
                 if (patient.records != undefined && patient.records != null) {
                     message = patient.records;
-                    var recordFound = true;
                 } else {
                     message = `No records found`;
                     status = 404
                 }
             } else {
-                message = `No records found`;
+                message = `There are no patients with the ID provided`;
                 status = 404
             }
 
@@ -489,6 +488,7 @@ function isRecordsRequestValid(req) {
     req.assert("nurse_name", "Field 'nurse_name' is required!").notEmpty();
     req.assert("type", "Field 'type' is required!").notEmpty();
     req.assert("category", "Field 'category' is required!").notEmpty();
+    req.assert("details", "Field 'details' is required!").notEmpty();
 
     return req.validationErrors();
 }

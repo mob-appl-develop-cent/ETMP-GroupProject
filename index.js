@@ -26,7 +26,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.listen(port, function () {
     console.log("Server is listening at " + patientsService + "/");
-    console.log("Endpoins:");
+    console.log("Endpoints:");
     console.log(patientsService + " methods: GET, POST, DELETE");
     console.log(patientsService + "/:id methods GET, PUT, DELETE");
     console.log(recordsService + " method: GET, POST");
