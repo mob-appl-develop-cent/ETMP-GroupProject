@@ -5,14 +5,14 @@
  * Date: 2018-09-29
  * Version 1.0.0
  */
-const patientsSave = require(`save`)(`patients`);
+//const patientsSave = require(`save`)(`patients`);
 var getCounter = 0;
 var postCounter = 0;
 var deleteCounter = 0;
 var putCounter = 0;
 
 module.exports = function (app) {
-
+/*
     //PATIENTS
 
     // Get all the patients
@@ -452,6 +452,8 @@ module.exports = function (app) {
             });
         });
     });
+
+    */
 };
 
 // just print in the log the counters of the requests
