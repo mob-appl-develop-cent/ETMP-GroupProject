@@ -43,7 +43,7 @@ app.get("/", function (req, res) {
         patientsService + " method: DELETE <br/>" +
         "<h3>Patients View Records:</h3>");
 });
-
+/*
 var SERVER_NAME = 'patients-api';
 var restify = require('restify');
 //make restify server
@@ -82,5 +82,5 @@ server.get('/patients/:id', function (req,res, next) {
     });
     next();
 });
-
+*/
 
