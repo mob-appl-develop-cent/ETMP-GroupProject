@@ -11,35 +11,47 @@ var deleteCounter = 0;
 var putCounter = 0;
 
 const Patient = require('../models/patient.model');
+const Record = require('../models/record.model');
 
 module.exports = function (app) {
 
-    //Get all the patients
-    app.get('/mongo/patients', function(req, res) {
-        console.log("Send request >>> ");
-        // Increment post counter and show the counter
-        postCounter++;
+    // #region Patient Methods
+
+    // Get all the patients
+    app.get("/patients", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
         showRequestCount();
-        Patient.find({}, function(err, patients) {
-            var patientMap = {};
-      
-            patients.forEach(function(patient) {
-                patientMap[patient._id] = patient;
-            });
-      
-            res.send(patientMap);  
+
+        //Get all the objects saved before.
+        Patient.find({})
+        // .populate('records')
+        .exec(function (error, patients) {
+            var message = "";
+            var status = 200;
+            if (patients != undefined && patients != null && patients != "") {
+                message = patients
+            } else {
+                message = `No patients found`;
+                status = 404;
+            }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
         });
     });
 
     //Get patient by ID
-    app.get("/mongo/patients/:id", function (req, res) {
+    app.get("/patients/:id", function (req, res) {
         console.log("Send request >>>");
         // Increment get counter and show the counter
         getCounter++;
         showRequestCount();
 
         //Get first object using query based on the ID
-        Patient.findOne({_id: req.params.id}, function (error, patient) {
+        Patient.findOne({_id: req.params.id})
+        .populate('records')
+        .exec(function (error, patient) {
             var message = "";
             var status = 200;
             if (patient != undefined && patient != null && patient != "") {
@@ -52,10 +64,11 @@ module.exports = function (app) {
             console.log(`Send response <<< ${message}`);
 
         });
+
     });
 
     //Create a new patient
-    app.post('/mongo/patients', function (req, res) {
+    app.post('/patients', function (req, res) {
         console.log("Send request >>> " + req);
         // Increment post counter and show the counter
         postCounter++;
@@ -86,7 +99,7 @@ module.exports = function (app) {
     });
 
     //Update patient by ID
-    app.put("/mongo/patients/:id", function (req, res) {
+    app.put("/patients/:id", function (req, res) {
         console.log("Send request >>> " + req);
         // Increment post counter and show the counter
         putCounter++;
@@ -112,7 +125,7 @@ module.exports = function (app) {
     });
 
     // Delete all the patients
-    app.delete("/mongo/patients", function (req, res) {
+    app.delete("/patients", function (req, res) {
         console.log("Send request >>>");
         // Increment delete counter and show the counter
         deleteCounter++;
@@ -134,7 +147,7 @@ module.exports = function (app) {
     });
 
     // Delete patient by id
-    app.delete("/mongo/patients/:id", function (req, res) {
+    app.delete("/patients/:id", function (req, res) {
         console.log("Send request >>>");
         // Increment delete counter and show the counter
         deleteCounter++;
@@ -158,7 +171,120 @@ module.exports = function (app) {
         });
     });
 
+    // #endregion
+
+    // #region Records Methods
+
+    // Get all the records by patient id
+    app.get("/patients/:id/records/", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        Patient.findOne({_id: req.params.id}, function (error, patient) {
+            var message = "";
+            var status = 200;
+
+            if (patient != undefined && patient != null && patient != "") {
+                if (patient.records != undefined && patient.records != null) {
+                    message = patient.records;
+                } else {
+                    message = `No records found`;
+                    status = 404
+                }
+            } else {
+                message = `There are no patients with the ID provided`;
+                status = 404
+            }
+
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+
+        });
+    });
+
+    // Get specific record by patient and record id
+    app.get("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        getCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        Patient.findOne({_id: req.params.id}, function (error, patient) {
+            var message = "";
+            var status = 200;
+            if (patient != undefined && patient != null && patient != "") {
+                if (patient.records != undefined && patient.records != null) {
+                    var recordFound = false;
+                    patient.records.forEach(function (element, index) {
+                        if (element[0]._id == req.params.rid) {
+                            message = patient.records[index];
+                            recordFound = true;
+                        }
+                    });
+                    if (!recordFound) {
+                        message = `No record with this id was found.`;
+                        status = 404;
+                    }
+                } else {
+                    message = `No records found`;
+                    status = 404
+                }
+            } else {
+                message = `No records found`;
+                status = 404
+            }
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+
+        });
+    });
+
+    //Create a new record by patient id
+    app.post("/patients/:id/records/", function (req, res) {
+
+        console.log("Send request >>>");
+
+        // Increment get counter and show the counter
+        postCounter++;
+        showRequestCount();
+
+        var reqValidErrors = isRecordsRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
+            return;
+        }
+
+        var record = fillRecordObjectFromReqBody(req);
+        
+        Patient.findOne({_id: req.params.id})
+        .exec(function (error, patient) {
+            var message = "";
+            var status = 200;
+            if (patient != undefined && patient != null && patient != "") {
+                patient.records.push(record)
+                patient.save()
+                message = record
+            } else {
+                status = 404;
+                message = `Patient not found`
+            }
+
+            res.status(status).send(message);
+            console.log(`Send response <<< ${message}`);
+
+        });
+
+        // #endregion
+
+    });
+
 };
+
+// #region Other Methods
 
 function showRequestCount() {
     console.log("Processed Request Count--> GET:" + getCounter
@@ -193,3 +319,25 @@ function fillPatientObjectFromReqBody(req) {
         doctor: req.body.doctor
     });
 }
+
+function isRecordsRequestValid(req) {
+    req.assert("date", "Field 'date' is required!").notEmpty();
+    req.assert("nurse_name", "Field 'nurse_name' is required!").notEmpty();
+    req.assert("type", "Field 'type' is required!").notEmpty();
+    req.assert("category", "Field 'category' is required!").notEmpty();
+    req.assert("details", "Field 'details' is required!").notEmpty();
+
+    return req.validationErrors();
+}
+
+function fillRecordObjectFromReqBody(req) {
+    return new Record({
+        date: req.body.date,
+        nurse_name: req.body.nurse_name,
+        type: req.body.type,
+        category: req.body.category,
+        details: req.body.details
+    });
+}
+
+// #endregion
