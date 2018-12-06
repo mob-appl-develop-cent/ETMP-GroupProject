@@ -278,9 +278,180 @@ module.exports = function (app) {
 
         });
 
-        // #endregion
-
     });
+
+    //Update a record by patient and record id
+    app.put("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        putCounter++;
+        showRequestCount();
+
+        var reqValidErrors = isRecordsRequestValid(req);
+        if (reqValidErrors) {
+            res.status(400).send(reqValidErrors);
+            return;
+        }
+        //Get all the objects saved before.
+        Patient.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            var record = req.body;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                var recordFound = false;
+                patient.records.forEach(function (element, index) {
+                    console.log(element);
+                    if (element[0]._id == req.params.rid) {
+                        record._id = req.params.rid;
+                        patient.records[index] = record;
+                        recordFound = true;
+                    }
+                });
+                if (!recordFound) {
+                    message = `No record with this id was found.`;
+                    status = 404;
+                    res.status(status).send(message);
+                    return;
+                }
+
+            }
+
+            Patient.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = req.body
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
+    });    
+
+    //Delete a record by patient and record id
+    app.delete("/patients/:id/records/:rid", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        deleteCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        Patient.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                var recordFound = false;
+                patient.records.forEach(function (element, index) {
+                    if (element[0]._id == req.params.rid) {
+                        patient.records.splice(index, 1);
+                        recordFound = true;
+                    }
+                });
+                if (!recordFound) {
+                    message = `No record with this id was found.`;
+                    status = 404;
+                    res.status(status).send(message);
+                    return;
+                }
+            }
+
+            Patient.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = `Record ID: ${req.params.rid} deleted successfully`
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
+    });
+
+    //Delete all patient's records by patient id
+    app.delete("/patients/:id/records", function (req, res) {
+        console.log("Send request >>>");
+        // Increment get counter and show the counter
+        deleteCounter++;
+        showRequestCount();
+
+        //Get all the objects saved before.
+        Patient.findOne({_id: req.params.id}, function (error, obj) {
+            var message = "";
+            var status = 200;
+            if (obj != undefined && obj != null && obj != "") {
+                message = obj;
+            } else {
+                message = `No patient found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            }
+
+            var patient = obj;
+            if (patient.records == null || patient.records == undefined) {
+                message = `No records was found`;
+                status = 404;
+                res.status(status).send(message);
+                return;
+            } else {
+                patient.records = null;
+            }
+
+            Patient.update(patient, function (error, patient) {
+                var message = "";
+                var status = 201;
+                if (patient != undefined && patient != null && patient != "") {
+                    message = patient
+                } else {
+                    message = `An error ocurred`;
+                    status = 500;
+                }
+
+                res.status(status).send(message);
+                console.log(`Send response <<< ${message}`);
+            });
+        });
+    })
+
+    // #endregion
 
 };
 
