@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Patient = require('../models/patient.model');
+var Record = require('../models/record.model');
 
 //Provide Test Dependencies
 var chai = require('chai');

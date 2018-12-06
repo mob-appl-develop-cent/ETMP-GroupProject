@@ -15,6 +15,7 @@ const recordsService = host + (port === 3000 ? ':' + port : '') + "/patients/:id
 //Just an example how to connect in mongodb cloud
 // Set up mongoose connection
 const mongoose = require('mongoose');
+module.exports = mongoose;
 let dev_db_url = 'mongodb://admin:group3noobJS@ds037997.mlab.com:37997/etmp-group-project-noobjs';
 let mongoDB = process.env.MONGODB_URI || dev_db_url;
 
