@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 describe('/GET Patients', function() {
     it('it should GET all the Patients', function(done)  {
     chai.request(server)
-        .get('/mongo/patients')
+        .get('/patients')
         .end(function (err, res) {
             res.should.have.status(200);
             res.body.should.be.a('array');
@@ -26,7 +26,7 @@ describe('/Get Patients', function () {
     var patientId = '666';
    it('it should NOT GET Patient Object without valid PatientID', function (done) {
        chai.request(server)
-           .get('/mongo/patients/' + patientId)
+           .get('/patients/' + patientId)
            .end(function (err,res) {
                res.should.have.status(500);
                res.body.should.be.a('object');
@@ -41,7 +41,7 @@ describe('/Get Patients', function () {
     var patientId = '584bc9ba420a6b189c510af6';
     it('it should GET Patient Object with valid PatientID', function (done) {
         chai.request(server)
-            .get('/mongo/patients/' + patientId)
+            .get('/patients/' + patientId)
             .end(function (err,res) {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -57,7 +57,7 @@ describe('/POST Patient', function() {
     };
     it('it should NOT POST Patient without all the parameters', function(done)  {
         chai.request(server)
-            .post('/mongo/patients')
+            .post('/patients')
             .send(patient)
             .end(function (err, res) {
                 res.should.have.status(500);
@@ -81,7 +81,7 @@ describe('/POST Patient', function () {
     };
     it('it should POST Patient when all fields are supplied', function (done) {
        chai.request(server)
-           .post('/mongo/patients')
+           .post('/patients')
            .send(patient)
            .end(function (err, res) {
                res.should.have.status(201);
@@ -106,7 +106,7 @@ describe('/PUT Patient Status', function () {
     var patientId = 'abc';
     it('it should NOT Update Patient status without valid Patient ID', function (done) {
         chai.request(server)
-            .put('/mongo/patients/' + patientId)
+            .put('/patients/' + patientId)
             .end(function (err,res) {
                 res.should.have.status(500);
                 res.body.should.be.a('object');
@@ -120,7 +120,7 @@ describe('/PUT Patient', function () {
     var patientId = '584bc9ba420a6b189c510af6';
     it('it should Update Patient status with valid Patient ID', function (done) {
         chai.request(server)
-            .put('/mongo/patients/' + patientId)
+            .put('/patients/' + patientId)
             .end(function (err,res) {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -135,7 +135,7 @@ describe('/Delete Patient', function () {
     var patientId = 'abc';
     it('it should NOT Delete Patient without valid Patient ID', function (done) {
         chai.request(server)
-            .del('/mongo/patients/' + patientId)
+            .del('/patients/' + patientId)
             .end(function (err,res) {
                 res.should.have.status(204);
                 done();
@@ -147,7 +147,7 @@ describe('/Delete Patient', function () {
     var patientId = '584bc9ba420a6b189c510af6';
     it('it should Delete Patient if all info is correct', function (done) {
         chai.request(server)
-            .del('/mongo/patients/' + patientId)
+            .del('/patients/' + patientId)
             .end(function (err,res) {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -163,7 +163,7 @@ describe('/POST Record', function() {
     var record = new Record({date:"2018/12/10", nurse_name: "Ratchet", type: "type", category: "category", details: "details"});
     it('it should NOT POST Record without valid Patient ID', function(done)  {
         chai.request(server)
-            .post('/mongo/patients/' + patientId + '/records')
+            .post('/patients/' + patientId + '/records')
             .send(record)
             .end(function (err, res) {
                 res.should.have.status(500);
@@ -178,7 +178,7 @@ describe('/POST Record', function() {
     var patientId = '584bc9ba420a6b189c510af6';
     it('it should NOT POST Record without one of the required parameters', function(done)  {
         chai.request(server)
-            .post('/mongo/patients/' + patientId + '/records')
+            .post('/patients/' + patientId + '/records')
             .send({date: '2018/12/10'})
             .end(function (err, res) {
                 res.should.have.status(500);
@@ -193,7 +193,7 @@ describe('/POST Record', function() {
     var patientId = '584bc9ba420a6b189c510af6';
     it('it should POST Record with all required fields and valid Patient ID', function(done)  {
         chai.request(server)
-            .post('/mongo/patients/' + patientId + '/records')
+            .post('/patients/' + patientId + '/records')
             .send({date:"2018/12/10", nurse_name: "Ratchet", type: "type", category: "category", details: "details"})
             .end(function (err, res) {
                 res.should.have.status(201);
