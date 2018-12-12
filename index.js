@@ -44,6 +44,7 @@ app.get("/", function (req, res) {
         patientsService + " method: DELETE <br/>" +
         "<h3>Patients View Records:</h3>");
 });
+module.exports = app
 /*
 var SERVER_NAME = 'patients-api';
 var restify = require('restify');

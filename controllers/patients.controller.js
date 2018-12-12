@@ -29,9 +29,10 @@ module.exports = function (app) {
         // .populate('records')
         .exec(function (error, patients) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (patients != undefined && patients != null && patients != "") {
                 message = patients
+                status = 200
             } else {
                 message = `No patients found`;
                 status = 404;
@@ -53,12 +54,13 @@ module.exports = function (app) {
         .populate('records')
         .exec(function (error, patient) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (patient != undefined && patient != null && patient != "") {
                 message = patient
+                status = 200
             } else {
-                status = 404;
                 message = `No records found`
+                status = 404;
             }
             res.status(status).send(message);
             console.log(`Send response <<< ${message}`);
@@ -88,6 +90,7 @@ module.exports = function (app) {
             //TODO: Get the err variable and try t catch the error correctly, 'cause ot shows all the error validation, so, our validation is not necessary.
             if (obj != undefined && obj != null && obj != "") {
                 message = obj
+                status = 200
             } else {
                 message = `An error ocurred`;
                 status = 500;
@@ -106,16 +109,17 @@ module.exports = function (app) {
         showRequestCount();
 
         // Get the object in the request body and update the saved object based on ID
-        var newPatient = req.body;
+        let newPatient = fillPatientObjectFromReqBody(req);
         newPatient._id = req.params.id;
         Patient.update(newPatient, function (error, patient) {
             var message = "";
-            var status = 200;
+            var status = 201;
 
             if (patient != undefined && patient != null && patient != "") {
                 message = patient
+                status = 200
             } else {
-                message = `User not found`;
+                message = `Patient not found`;
                 status = 404;
             }
 
@@ -134,9 +138,10 @@ module.exports = function (app) {
         // delete all the records and send the response.
         Patient.deleteMany({}, function (error) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (error == undefined || error == null) {
                 message = `All patients were deleted successfully`
+                status = 200
             } else {
                 message = `Unexpected error`
                 status = 500
@@ -185,11 +190,12 @@ module.exports = function (app) {
         //Get all the objects saved before.
         Patient.findOne({_id: req.params.id}, function (error, patient) {
             var message = "";
-            var status = 200;
+            var status = 201;
 
             if (patient != undefined && patient != null && patient != "") {
                 if (patient.records != undefined && patient.records != null) {
                     message = patient.records;
+                    status = 200
                 } else {
                     message = `No records found`;
                     status = 404
@@ -215,7 +221,7 @@ module.exports = function (app) {
         //Get all the objects saved before.
         Patient.findOne({_id: req.params.id}, function (error, patient) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (patient != undefined && patient != null && patient != "") {
                 if (patient.records != undefined && patient.records != null) {
                     var recordFound = false;
@@ -223,6 +229,7 @@ module.exports = function (app) {
                         if (element[0]._id == req.params.rid) {
                             message = patient.records[index];
                             recordFound = true;
+                            status = 200
                         }
                     });
                     if (!recordFound) {
@@ -263,14 +270,15 @@ module.exports = function (app) {
         Patient.findOne({_id: req.params.id})
         .exec(function (error, patient) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (patient != undefined && patient != null && patient != "") {
                 patient.records.push(record)
                 patient.save()
                 message = record
+                status = 200
             } else {
-                status = 404;
                 message = `Patient not found`
+                status = 404
             }
 
             res.status(status).send(message);
@@ -295,9 +303,10 @@ module.exports = function (app) {
         //Get all the objects saved before.
         Patient.findOne({_id: req.params.id}, function (error, obj) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (obj != undefined && obj != null && obj != "") {
                 message = obj;
+                status = 200
             } else {
                 message = `No patient found`;
                 status = 404;
@@ -320,6 +329,7 @@ module.exports = function (app) {
                         record._id = req.params.rid;
                         patient.records[index] = record;
                         recordFound = true;
+                        status = 200
                     }
                 });
                 if (!recordFound) {
@@ -336,6 +346,7 @@ module.exports = function (app) {
                 var status = 201;
                 if (patient != undefined && patient != null && patient != "") {
                     message = req.body
+                    status = 200
                 } else {
                     message = `An error ocurred`;
                     status = 500;
@@ -357,9 +368,10 @@ module.exports = function (app) {
         //Get all the objects saved before.
         Patient.findOne({_id: req.params.id}, function (error, obj) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (obj != undefined && obj != null && obj != "") {
                 message = obj;
+                status = 200
             } else {
                 message = `No patient found`;
                 status = 404;
@@ -379,6 +391,7 @@ module.exports = function (app) {
                     if (element[0]._id == req.params.rid) {
                         patient.records.splice(index, 1);
                         recordFound = true;
+                        status = 200
                     }
                 });
                 if (!recordFound) {
@@ -394,6 +407,7 @@ module.exports = function (app) {
                 var status = 201;
                 if (patient != undefined && patient != null && patient != "") {
                     message = `Record ID: ${req.params.rid} deleted successfully`
+                    status = 200
                 } else {
                     message = `An error ocurred`;
                     status = 500;
@@ -415,9 +429,10 @@ module.exports = function (app) {
         //Get all the objects saved before.
         Patient.findOne({_id: req.params.id}, function (error, obj) {
             var message = "";
-            var status = 200;
+            var status = 201;
             if (obj != undefined && obj != null && obj != "") {
                 message = obj;
+                status = 200
             } else {
                 message = `No patient found`;
                 status = 404;
@@ -440,6 +455,7 @@ module.exports = function (app) {
                 var status = 201;
                 if (patient != undefined && patient != null && patient != "") {
                     message = patient
+                    status = 200
                 } else {
                     message = `An error ocurred`;
                     status = 500;
