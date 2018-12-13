@@ -6,7 +6,7 @@
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../index');
-//var should = chai.should();
+var should = chai.should();
 var testPatientID = ""
 
 chai.use(chaiHttp);
